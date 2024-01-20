@@ -6,7 +6,7 @@ export type LotteryResult = {
     lotteryName: string;
     lotteryPrice: number;
     roundNumber: number;
-    previousWinningTicket: number[];
+    previousWinningticket: number[];
     poolAmount: poolAmount[];
     winningPot: number;
     currentPool: number;
