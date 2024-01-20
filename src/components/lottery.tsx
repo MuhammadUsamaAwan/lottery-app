@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import type { LotteryResult } from '~/types';
 
 import { cn } from '~/lib/utils';
@@ -11,6 +12,9 @@ type Props = {
 };
 
 export function Lottery({ lottery, type }: Props) {
+  const [showPoolStatus, setShowPoolStatus] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
+
   return (
     <div
       className={cn(
@@ -23,12 +27,20 @@ export function Lottery({ lottery, type }: Props) {
           <div>{lottery.lotteryName}</div>
           <div className='text-sm font-medium'>No. {lottery.roundNumber}</div>
         </div>
-        <Icons.magnifyPlus className='size-4 text-[#961A88]' />
+        {isZoomed ? (
+          <button onClick={() => setIsZoomed(false)}>
+            <Icons.magnifyMinus className='size-4 text-[#961A88]' />
+          </button>
+        ) : (
+          <button onClick={() => setIsZoomed(true)}>
+            <Icons.magnifyPlus className='size-4 text-[#961A88]' />
+          </button>
+        )}
       </div>
 
       <div className='flex gap-2 px-4'>
-        {lottery.previousWinningticket.map(t => (
-          <div key={t} className='grid size-9 place-content-center rounded-full bg-[#595857]'>
+        {lottery.previousWinningticket.map((t, i) => (
+          <div key={i} className='grid size-9 place-content-center rounded-full bg-[#595857]'>
             <div className='text-[22px] text-white'>{t}</div>
           </div>
         ))}
@@ -56,7 +68,7 @@ export function Lottery({ lottery, type }: Props) {
           </div>
           <div className='flex items-center gap-2'>
             <Icons.clock className='size-[18px]' />
-            <div className='text-[20px] font-[600]'>142:32:01</div>
+            <div className='text-[20px] font-[600]'>{lottery.nextDraw}</div>
           </div>
         </div>
         <button
@@ -69,10 +81,28 @@ export function Lottery({ lottery, type }: Props) {
         </button>
       </div>
 
-      <div className='flex items-center justify-center gap-1'>
-        <Icons.poylgon className='size-3 rotate-180 text-[#3F3F3F]' />
-        <div className='text-[13px] font-[600] text-[#3F3F3F]'>Current Pool Status</div>
-      </div>
+      {showPoolStatus && (
+        <div className='px-4'>
+          <div>Current Pool Status</div>
+          {lottery.poolAmount?.map((p, i) => (
+            <div key={i} className='flex items-center justify-between'>
+              <div>{p.coinName}</div>
+              <div>
+                {p.poolAmount} {p.coinSymbol}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <button
+        onClick={() => setShowPoolStatus(prev => !prev)}
+        className='flex w-full items-center justify-center gap-1'
+        data-testid='pool-status'
+      >
+        <Icons.poylgon className={cn('size-3 text-[#3F3F3F] duration-200', !showPoolStatus && 'rotate-180')} />
+        <div className='text-[13px] font-[600] text-[#3F3F3F]'>{showPoolStatus ? 'Close' : 'Current Pool Status'}</div>
+      </button>
     </div>
   );
 }
